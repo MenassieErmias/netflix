@@ -1,7 +1,28 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { UserAuth } from '../context/AuthContext';
 
 const Login = () => {
+
+    const { user, logIn } = UserAuth();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState("")
+
+    const navigate = useNavigate();
+
+    const handleSignIn = async (e) => {
+        setError("")
+        e.preventDefault();
+        try {
+            await logIn(email, password);
+            navigate('/');
+        } catch (error) {
+            console.log(error);
+            setError(error.message)
+        }
+    }
+
     return (
         <div className='w-full h-screen'>
             <img src="https://cdn.mos.cms.futurecdn.net/rDJegQJaCyGaYysj2g5XWY.jpg"
@@ -13,9 +34,12 @@ const Login = () => {
                 <div className='max-w-[450px] h-[600px] mx-auto bg-black/75 text-white'>
                     <div className='max-w-[320px] mx-auto py-16'>
                         <h1 className='text-3xl font-bold'>Sign In</h1>
-                        <form className='w-full flex flex-col py-4'>
-                            <input className='p-3 my-2 bg-gray-700 rounded ' type="email" name="email" id="email" placeholder='E-mail' autoComplete='email' />
-                            <input className='p-3 my-2 bg-gray-700 rounded ' type="password" name="password" id="password" placeholder='Password' autoComplete='current-password' />
+                        {
+                            error && <p className='p-1 text-red-500'>{error}</p>
+                        }
+                        <form onSubmit={handleSignIn} className='w-full flex flex-col py-4'>
+                            <input onChange={(e) => setEmail(e.target.value)} className='p-3 my-2 bg-gray-700 rounded ' type="email" name="email" id="email" placeholder='E-mail' autoComplete='email' />
+                            <input onChange={(e) => setPassword(e.target.value)} className='p-3 my-2 bg-gray-700 rounded ' type="password" name="password" id="password" placeholder='Password' autoComplete='current-password' />
                             <button className='bg-red-600 py-3 my-6 rounded font-bold'>
                                 Sign In
                             </button>
